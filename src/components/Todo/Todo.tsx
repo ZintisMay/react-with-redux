@@ -2,12 +2,12 @@ import "./Todo.css";
 import { useDispatch, UseDispatch } from "react-redux";
 import { BsCheckCircle, BsPencil, BsTrash } from "react-icons/bs";
 
-import { changeTodoStatus, removeFromTodos } from "../../state/slice";
+import { changeTodoCompleted, removeFromTodos } from "../../state/slice";
 
 export type TodoType = {
   id: number;
-  text: string;
-  status: string;
+  title: string;
+  completed: boolean;
 };
 type TodoProps = {
   todo: TodoType;
@@ -18,19 +18,20 @@ const Todo = ({ todo, handleEdit }: TodoProps) => {
   const dispatch = useDispatch();
 
   const handleStatus = () => {
-    dispatch(changeTodoStatus(todo.id));
+    dispatch(changeTodoCompleted(todo.id));
   };
 
   const handleDelete = () => {
     dispatch(removeFromTodos(todo.id));
   };
 
-  const todoClassName: string = todo.status === "complete" ? "complete" : "";
+  const todoClassName: string = todo.completed === true ? "complete" : "";
 
   return (
     <div className="todo">
+      <span>{todo.id}:</span>
       <div className="text">
-        <span className={todoClassName}>{todo.text}</span>
+        <span className={todoClassName}>{todo.title}</span>
       </div>
       <div className="edit">
         <div onClick={() => handleEdit(todo.id)}>

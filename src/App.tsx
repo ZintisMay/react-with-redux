@@ -1,31 +1,33 @@
 import { useEffect, useState } from "react";
 import "./App.css";
-import { useDispatch, UseDispatch, useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import Todo, { TodoType } from "./components/Todo/Todo";
-import { addToTodos, removeFromTodos } from "./state/slice";
+import { addNewTodo, addNewTodos, removeFromTodos } from "./state/slice";
 import { BsPlusCircle } from "react-icons/bs";
 
 import { getTodos } from "./service/todoData";
 
 function App() {
+  const dispatch = useDispatch();
+  const todos: TodoType[] = useSelector((state: any) => state.todos.todos);
+  // go get the JSON placeholder data
   useEffect(() => {
     getTodos().then((res) => {
-      console.log(res);
+      console.log(res.data);
+      dispatch(addNewTodos(res.data));
     });
   }, []);
 
-  const dispatch = useDispatch();
-  const todos: TodoType[] = useSelector((state: any) => state.todos.todos);
-  const [text, setText] = useState("");
+  const [title, setTitle] = useState("");
   const handleAdd = (): void => {
-    if (text === "") {
+    if (title === "") {
       return;
     }
     dispatch(
-      addToTodos({
-        id: Math.floor(Math.random() * 1000),
-        text,
-        status: "incomplete",
+      addNewTodo({
+        id: todos[todos.length - 1].id + 1,
+        title,
+        completed: "incomplete",
       })
     );
   };
@@ -34,7 +36,7 @@ function App() {
       (todo: TodoType) => todo.id === id
     );
     if (existingTodo === undefined) return;
-    setText(existingTodo.text);
+    setTitle(existingTodo.title);
     dispatch(removeFromTodos(id));
   };
 
@@ -47,8 +49,8 @@ function App() {
         <div className="add">
           <input
             type="text"
-            onChange={(event) => setText(event.target.value)}
-            value={text}
+            onChange={(event) => setTitle(event.target.value)}
+            value={title}
           />
           <button onClick={handleAdd}>
             <BsPlusCircle />

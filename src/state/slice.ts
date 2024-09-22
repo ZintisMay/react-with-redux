@@ -1,12 +1,17 @@
 import { createSlice } from "@reduxjs/toolkit";
 
-type Todo = { id: number; text: string; status: string };
+type Todo = {
+  userId?: number;
+  id: number;
+  title: string;
+  completed: boolean;
+};
 
 const initialState: { todos: Todo[] } = {
   todos: [
-    { id: 1, text: "a", status: "incomplete" },
-    { id: 2, text: "b", status: "incomplete" },
-    { id: 3, text: "c", status: "complete" },
+    // { userId: 1, id: 1, title: "a", completed: false },
+    // { userId: 1, id: 2, title: "b", completed: false },
+    // { userId: 1, id: 3, title: "c", completed: true },
   ],
 };
 
@@ -14,38 +19,47 @@ export const todoSlice = createSlice({
   name: "todos",
   initialState,
   reducers: {
-    addToTodos: (state, action) => {
+    addNewTodos: (state, action) => {
+      const newTodos = action.payload;
+      state.todos = [...state.todos, ...newTodos];
+    },
+    addNewTodo: (state, action) => {
       const newTodo = action.payload;
       state.todos.push(newTodo);
     },
     editTodos: (state, action) => {
-      const { id, text } = action.payload;
+      const { id, title } = action.payload;
       const existingTodo: Todo | undefined = state.todos.find(
         (todo) => todo.id === id
       );
       if (existingTodo) {
-        existingTodo.text = text;
+        existingTodo.title = title;
       }
     },
     removeFromTodos: (state, action) => {
       const id = action.payload;
       state.todos = state.todos.filter((todo) => todo.id !== id);
     },
-    changeTodoStatus: (state, action) => {
+    changeTodoCompleted: (state, action) => {
       const id = action.payload;
       const existingTodo: Todo | undefined = state.todos.find(
         (todo) => todo.id === id
       );
-      if (existingTodo?.status === "incomplete") {
-        existingTodo.status = "complete";
-      } else if (existingTodo?.status === "complete") {
-        existingTodo.status = "incomplete";
+      if (existingTodo?.completed === true) {
+        existingTodo.completed = false;
+      } else if (existingTodo?.completed === false) {
+        existingTodo.completed = true;
       }
     },
   },
 });
 
-export const { addToTodos, editTodos, removeFromTodos, changeTodoStatus } =
-  todoSlice.actions;
+export const {
+  addNewTodo,
+  addNewTodos,
+  editTodos,
+  removeFromTodos,
+  changeTodoCompleted,
+} = todoSlice.actions;
 
 export default todoSlice.reducer;
