@@ -1,50 +1,32 @@
 import "./Todo.css";
-import { useDispatch, UseDispatch } from "react-redux";
-import { BsCheckCircle, BsPencil, BsTrash } from "react-icons/bs";
+import { useDispatch } from "react-redux";
+import { BsCheckCircle } from "react-icons/bs";
+import { changeTodoCompleted } from "../../state/slice";
+import { TodoProps } from "../../types/todo";
 
-import { changeTodoCompleted, removeFromTodos } from "../../state/slice";
-
-export type TodoType = {
-  id: number;
-  title: string;
-  completed: boolean;
-};
-type TodoProps = {
-  todo: TodoType;
-  handleEdit: Function;
-};
-
-const Todo = ({ todo, handleEdit }: TodoProps) => {
+const Todo = ({ todo }: TodoProps) => {
   const dispatch = useDispatch();
 
-  const handleStatus = () => {
+  const handleStatus = (): void => {
     dispatch(changeTodoCompleted(todo.id));
   };
 
-  const handleDelete = () => {
-    dispatch(removeFromTodos(todo.id));
-  };
-
-  const todoClassName: string = todo.completed === true ? "complete" : "";
+  const todoClassName: string = `Todo__text${
+    todo.completed ? "--complete" : ""
+  }`;
+  const todoCheckClassName: string = `Todo__checkmark${
+    todo.completed ? "--complete" : ""
+  }`;
 
   return (
-    <div className="todo">
-      <span>{todo.id}:</span>
-      <div className="text">
+    <tr className="Todo">
+      <td className="Todo__data">
         <span className={todoClassName}>{todo.title}</span>
-      </div>
-      <div className="edit">
-        <div onClick={() => handleEdit(todo.id)}>
-          <BsPencil />
-        </div>
-        <div onClick={handleStatus}>
-          <BsCheckCircle />
-        </div>
-        <div onClick={handleDelete}>
-          <BsTrash />
-        </div>
-      </div>
-    </div>
+      </td>
+      <td onClick={handleStatus} className={todoCheckClassName}>
+        <BsCheckCircle />
+      </td>
+    </tr>
   );
 };
 

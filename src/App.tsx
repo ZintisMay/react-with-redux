@@ -1,68 +1,86 @@
-import { useEffect, useState } from "react";
 import "./App.css";
+import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import Todo, { TodoType } from "./components/Todo/Todo";
-import { addNewTodo, addNewTodos, removeFromTodos } from "./state/slice";
-import { BsPlusCircle } from "react-icons/bs";
+import Todo from "./components/Todo/Todo";
+import { TodoType } from "./types/todo";
+import { addNewTodos } from "./state/slice";
 
-import { getTodos } from "./service/todoData";
+import { getTodos, getTodoCount } from "./service/todo";
+import { arrayToX } from "./utils";
+
+const LIMITS = [10, 20, 30, 40];
 
 function App() {
+  const [page, setPage] = useState(0);
+  const [count, setCount] = useState(0);
+  const [limit, setLimit] = useState(LIMITS[0]);
+
+  // Get the todos state
   const dispatch = useDispatch();
   const todos: TodoType[] = useSelector((state: any) => state.todos.todos);
+
   // go get the JSON placeholder data
   useEffect(() => {
-    getTodos().then((res) => {
-      console.log(res.data);
+    getTodoCount().then((count) => {
+      setCount(count);
+    });
+    getTodos(page * limit, limit).then((res) => {
       dispatch(addNewTodos(res.data));
     });
-  }, []);
+    //update when user changes item limit or page
+  }, [limit, page]);
 
-  const [title, setTitle] = useState("");
-  const handleAdd = (): void => {
-    if (title === "") {
-      return;
-    }
-    dispatch(
-      addNewTodo({
-        id: todos[todos.length - 1].id + 1,
-        title,
-        completed: "incomplete",
-      })
-    );
+  const changeLimit = (e: React.FormEvent<HTMLSelectElement>) => {
+    setLimit(Number((e.target as HTMLTextAreaElement).value));
+    setPage(0);
   };
-  const handleEdit = (id: number) => {
-    const existingTodo: TodoType | undefined = todos.find(
-      (todo: TodoType) => todo.id === id
-    );
-    if (existingTodo === undefined) return;
-    setTitle(existingTodo.title);
-    dispatch(removeFromTodos(id));
+
+  const changePage = (e: React.FormEvent<HTMLSelectElement>) => {
+    setPage(Number((e.target as HTMLTextAreaElement).value));
   };
+
+  const pageLimit: number = Math.ceil(count / limit);
 
   return (
     <div className="app">
-      <div className="content">
-        <div className="header">
-          <span className="title">Todo List</span>
-        </div>
-        <div className="add">
-          <input
-            type="text"
-            onChange={(event) => setTitle(event.target.value)}
-            value={title}
-          />
-          <button onClick={handleAdd}>
-            <BsPlusCircle />
-            <span>Add</span>
-          </button>
+      <main className="content">
+        <h1 className="content__header">Todo List</h1>
+
+        <div className="content__options">
+          <label>Viewing </label>
+          <select onChange={changeLimit} value={limit}>
+            {LIMITS.map((item, index) => (
+              <option key={index} value={item}>
+                {item}
+              </option>
+            ))}
+          </select>
+          <label> items on page </label>
+          <select onChange={changePage} value={page}>
+            {arrayToX(pageLimit).map((_, index) => {
+              return <option value={index}>{index + 1}</option>;
+            })}
+          </select>
+          <span> of {Math.ceil(count / limit)}</span>
         </div>
         <div className="main">
-          {todos.map((todo, index) => {
-            return <Todo key={index} todo={todo} handleEdit={handleEdit} />;
-          })}
+          <table className="todoTable">
+            <tbody className="todoTable__body">
+              <tr className="todoTable__header">
+                <td className="todoTable__text">
+                  <h3>Task</h3>
+                </td>
+                <td className="todoTable__text">
+                  <h3>Completed</h3>
+                </td>
+              </tr>
+              {todos.slice(0, limit).map((todo, index) => {
+                return <Todo key={index} todo={todo} />;
+              })}
+            </tbody>
+          </table>
         </div>
-      </div>
+      </main>
     </div>
   );
 }

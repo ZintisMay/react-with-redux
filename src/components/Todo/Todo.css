@@ -1,37 +1,40 @@
-.todo {
-  display: flex;
-  align-items: center;
-  width: 100%;
+.Todo {
+  width: calc(100% - 100px);
+  max-width: 400px;
   padding: 4px 12px 4px 0;
+}
+.Todo__data {
+  width: calc(100% - 160px);
+  text-overflow: ellipsis;
+  overflow: hidden;
+  max-width: 300px;
   border-bottom: 1px solid #727272;
 }
-
-.todo .text {
-  flex: 1;
+.Todo__text {
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
-
-.todo .text .complete {
+.Todo__text--complete {
   text-decoration: line-through;
-  color: #727272;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
-
-.todo .edit {
-  display: flex;
-  gap: 4px;
+.Todo__checkmark {
+  text-align: center;
+  border-bottom: 1px solid #727272;
 }
-
-.todo .edit div {
-  cursor: pointer;
-  transition: transform 0.3s ease-in-out;
+.Todo__checkmark--complete {
+  text-align: center;
+  border-bottom: 1px solid #727272;
 }
-
-.todo .edit div:hover {
-  transform: scale(1.1);
+.Todo__checkmark--complete * {
+  opacity: 0.5;
 }
-
-@media only screen and (max-width: 380px) {
-  .todo {
-    flex-direction: column;
-    align-items: flex-start;
+@media (max-width: 500px) {
+  .Todo__data {
+    text-overflow: ellipsis;
+    overflow: hidden;
+    max-width: calc(100vw - 150px);
+    border-bottom: 1px solid #727272;
   }
 }
