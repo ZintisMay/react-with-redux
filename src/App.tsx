@@ -1,6 +1,7 @@
 import "./App.css";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+
 import Todo from "./components/Todo/Todo";
 import { TodoType } from "./types/todo";
 import { addNewTodos } from "./state/slice";
